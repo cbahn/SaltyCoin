@@ -11,10 +11,12 @@ import random
 import html
 
 import time
+import datetime
 from threading import Thread
 
 # Import the DataStore.py functions
 from DataStore import DataStore
+from RandomWalker import RandomWalker
 
 ##################
 ###  SETTINGS  ###
@@ -34,6 +36,12 @@ logging_level = logging.INFO
 guestlist_file_location = 'datafiles/guestlist.json'
 
 message_of_the_day = "This message of the day is brought to you by templating."
+
+#########################
+###  INITIALIZATIONS  ###
+#########################
+
+market = RandomWalker()
 
 #####################
 ###  DEFINITIONS  ###
@@ -86,7 +94,7 @@ class Request_handler(BaseHTTPRequestHandler):
             self.send_header('Content-type', 'text/html')
             self.end_headers()
             self.wfile.write(homepage_builder().encode('utf-8'))
-        
+
         # Hardcoding the resource files like this isn't great, but it'll work for now
         elif self.path == '/res/style.css':
             self.__send_file('res/style.css','text/css')
@@ -106,8 +114,11 @@ class Request_handler(BaseHTTPRequestHandler):
         elif self.path == '/res/main.js':
             self.__send_file('res/main.js','text/javascript')
 
-        elif self.path == '/res/dummy-data.json':
-            self.__send_file('res/dummy-data.json','application/json')
+        elif self.path == '/res/dummy-data.json': ## TODO this url should be changed
+            self.send_response(200)                        # Response type: Success 👍
+            self.send_header('Content-type', 'application/json') 
+            self.end_headers()                            
+            self.wfile.write( market.exportRecentValuesAsJson(100).encode('utf-8') )
             
         else: # If the response isn't recognized, send a 404 file not found error
             self.send_response(404)
@@ -142,10 +153,14 @@ class Request_handler(BaseHTTPRequestHandler):
             self.send_response(404)
             self.end_headers()
         
-def say_hi():
+def sixtySecLoop(market):
     while True:
-        logging.info("hi")
-        time.sleep(1)
+        # Get current time. Wait until the beginning of the next second
+        now = datetime.datetime.now()
+        nextSec = now.replace(microsecond = 0) + datetime.timedelta(seconds = 1)
+        time.sleep((nextSec - now).total_seconds())
+
+        market.next()
 
 
 ##############
@@ -154,9 +169,12 @@ def say_hi():
 if __name__ == '__main__':
     # Turn on logging so that info appears in the console window
     logging.basicConfig(level=logging_level)
-    
-    task1 = Thread(target=say_hi)
+
+    ## This page was useful in getting this working (at the bottom under Alternative)
+    # https://towardsdatascience.com/asyncio-is-not-parallelism-70bfed470489
+    task1 = Thread(target=sixtySecLoop, args=[market])
     task1.start()
+
 
     # Start the webserver listening at our home address and port
     # Request_handler will be responsible for all requests
@@ -164,5 +182,4 @@ if __name__ == '__main__':
     httpd = HTTPServer(server_address, Request_handler)
     logging.info('Starting webserver on localhost:{} ...\n'.format(port))
 
-    # For now the only way to exit the server is by ending the process
     httpd.serve_forever()

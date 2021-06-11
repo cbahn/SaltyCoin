@@ -10,9 +10,9 @@ class RandomWalker:
     value = 0
     
     initialValue = 10
-    initialDatapoints = 10
+    initialDatapoints = 100
 
-    skew = 0.01
+    skew = 0
     volitility = 0.01
     minimum = 0.01
 
