@@ -7,7 +7,7 @@ const dataContainer = new DataContainer();
 
 function tick() {  
   $.ajax({
-    url:'res/dummy-data.json',
+    url:'100_values',
     dataType: 'json',
     success: function(ajaxResponse) {
       // Begin async

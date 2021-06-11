@@ -9,6 +9,7 @@ from urllib.parse import parse_qs
 import logging
 import random
 import html
+import re
 
 import time
 import datetime
@@ -87,42 +88,54 @@ class Request_handler(BaseHTTPRequestHandler):
         The self.path variable stores the request path. For instance, if the browser navigates to 
         http://localhost:8080/images then the path will be '/images'.
         """
-        
+
+        # Split path into components. The path is split by the '/' deliminator and all empty strings are discarded
+        # '/' becomes []
+        # '/foo' becomes ['foo']
+        # '/res/file.txt' becomes ['res','file.txt']
+        pathComponents = list(filter(lambda x: not x == "", self.path.split('/')))
+
         # If the request is for the main page then we generate the page using the homepage_builder function
-        if self.path == '/':
+        if len(pathComponents) == 0:
             self.send_response(200)
             self.send_header('Content-type', 'text/html')
             self.end_headers()
             self.wfile.write(homepage_builder().encode('utf-8'))
 
-        # Hardcoding the resource files like this isn't great, but it'll work for now
-        elif self.path == '/res/style.css':
-            self.__send_file('res/style.css','text/css')
-            
-        elif self.path == '/res/favicon.ico':
-            self.__send_file('res/favicon.ico','image/x-icon')
+        elif pathComponents[0] == 'res':
 
-        elif self.path == '/res/chart-container.js':
-            self.__send_file('res/chart-container.js','text/javascript')
+            # I couldn't find a great input sanitizer for this step, so I'm
+            # going to be paranoid and create a whitelist of files in /res
+            allowedFiles = {
+                'style.css': 'text/css',
+                'favicon.ico': 'image/x-icon',
+                'chart-container.js': 'text/javascript',
+                'chart.min.js': 'text/javascript',
+                'data-container.js': 'text/javascript',
+                'main.js': 'text/javascript'
+            }
 
-        elif self.path == '/res/chart.min.js':
-            self.__send_file('res/chart.min.js','text/javascript')
-        
-        elif self.path == '/res/data-container.js':
-            self.__send_file('res/data-container.js','text/javascript')
-        
-        elif self.path == '/res/main.js':
-            self.__send_file('res/main.js','text/javascript')
+            if len(pathComponents) == 2 and pathComponents[1] in allowedFiles:
+                # serve the file. Use the allowedFiles dictionary to send correct MIME type
+                self.__send_file('res/' + pathComponents[1], allowedFiles[pathComponents[1]])
+                return
+            else:
+                # file not found in /res directory
+                self.send_response(404)
+                self.end_headers()
+                return
 
-        elif self.path == '/res/dummy-data.json': ## TODO this url should be changed
-            self.send_response(200)                        # Response type: Success 👍
-            self.send_header('Content-type', 'application/json') 
-            self.end_headers()                            
-            self.wfile.write( market.exportRecentValuesAsJson(100).encode('utf-8') )
-            
-        else: # If the response isn't recognized, send a 404 file not found error
-            self.send_response(404)
+        elif pathComponents[0] == '100_values' and len(pathComponents) == 1:
+            self.send_response(200)
+            self.send_header('Content-type', 'application/json')
             self.end_headers()
+            self.wfile.write( market.exportRecentValuesAsJson(100).encode('utf-8') )
+            return
+            
+        # If the response isn't recognized, send a 404 file not found error
+        self.send_response(404)
+        self.end_headers()
+        return
 
 
     def do_POST(self):
