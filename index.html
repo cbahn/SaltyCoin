@@ -1,0 +1,23 @@
+<html>
+<head>
+<!-- Thanks to https://www.freefavicon.com/freefavicons/abstract/iconinfo/white--teal-checker-pattern-152-267043.html for this favicon -->
+<link rel="shortcut icon" href="/res/favicon.ico" />
+<link rel="stylesheet" href="/res/style.css">
+</head>
+<body>
+<h1>Edit-Me-Webserver Homepage</h1>
+<p>Message of the day: ${motd}</p>
+
+<table>
+  <tr>
+    <th>Name</th>
+    <th>ID</th>
+  </tr>
+  ${table}
+</table>
+<br>
+<form action="/guestlist" method="post">
+Sign your name to the Guestlist: <input type="text" name="name">  <input type="submit" value="Send">
+</form>
+
+</body>
