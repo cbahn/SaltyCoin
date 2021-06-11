@@ -21,6 +21,10 @@ class RandomWalker {
     }
 }
 
+
+
+dataLength = 100;
+
 class DataContainer {
     walker;
     data;
@@ -30,13 +34,21 @@ class DataContainer {
         walker.currentValue = 10;
         walker.upChance = 0.52;
         walker.changeDirectionPenalty = .25;
-        this.data = new Array(1000).fill(undefined).map(() => walker.next());
+
+
+        this.data = new Array(dataLength).fill(3);
+
+        // Fill the data array with the number 3
+        //this.data = new Array(dataLength).fill(undefined).map(() => walker.next());
+        //this.data = new Array(dataLength).fill(3);
+
         this.walker = walker;
     }
 
     next() {
         this.data.shift();
         this.data.push(this.walker.next());
+        
         return this.data.map((item, index) => {
             return {
                 x: index,
@@ -44,4 +56,17 @@ class DataContainer {
             };
         });
     }
+
+    replace(newData) {
+        this.data = newData;
+
+        return this.data.map((item, index) => {
+            return {
+                x: index,
+                y: item
+            };
+        });
+
+    }
+
 }

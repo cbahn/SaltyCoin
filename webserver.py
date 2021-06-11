@@ -99,6 +99,12 @@ class Request_handler(BaseHTTPRequestHandler):
         
         elif self.path == '/res/data-container.js':
             self.__send_file('res/data-container.js','text/javascript')
+        
+        elif self.path == '/res/main.js':
+            self.__send_file('res/main.js','text/javascript')
+
+        elif self.path == '/res/dummy-data.json':
+            self.__send_file('res/dummy-data.json','application/json')
             
         else: # If the response isn't recognized, send a 404 file not found error
             self.send_response(404)
