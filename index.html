@@ -8,6 +8,9 @@
 <h1>Edit-Me-Webserver Homepage</h1>
 <p>Message of the day: ${motd}</p>
 
+<h1>SaltCoin<span id=currentValue></span><span id=up>UP</span><span id=down>DOWN</span></h1>
+<canvas id=chart></canvas>
+
 <table>
   <tr>
     <th>Name</th>
@@ -21,3 +24,34 @@ Sign your name to the Guestlist: <input type="text" name="name">  <input type="s
 </form>
 
 </body>
+
+<script src="res/chart-container.js"></script>
+<script src="res/data-container.js"></script>
+<script src="res/chart.min.js"></script>
+<script>
+    const context = document.getElementById("chart").getContext("2d");
+    const upElement = document.getElementById("up");
+    const downElement = document.getElementById("down");
+    const currentValueElement = document.getElementById("currentValue");
+    const chartContainer = new ChartContainer(context);
+    const dataContainer = new DataContainer();
+
+    function tick() {
+        const data = dataContainer.next();
+        chartContainer.setData(dataContainer.next());
+        const currentValue = data[data.length-1].y.toFixed(2);
+        const previousValue = data[data.length-2].y.toFixed(2);
+        currentValueElement.textContent = currentValue;
+        if (currentValue > previousValue) {
+            upElement.style.display = null;
+            downElement.style.display = "none";
+        }
+        else {
+            upElement.style.display = "none";
+            downElement.style.display = null;
+        }
+    }
+
+    tick();
+    window.setInterval(() => tick(), 1000);
+</script>

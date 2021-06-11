@@ -84,12 +84,21 @@ class Request_handler(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(homepage_builder().encode('utf-8'))
         
-        # If the response is asking for the style.css file or the favicon.ico file then respond with the file
+        # Hardcoding the resource files like this isn't great, but it'll work for now
         elif self.path == '/res/style.css':
             self.__send_file('res/style.css','text/css')
             
         elif self.path == '/res/favicon.ico':
             self.__send_file('res/favicon.ico','image/x-icon')
+
+        elif self.path == '/res/chart-container.js':
+            self.__send_file('res/chart-container.js','text/javascript')
+
+        elif self.path == '/res/chart.min.js':
+            self.__send_file('res/chart.min.js','text/javascript')
+        
+        elif self.path == '/res/data-container.js':
+            self.__send_file('res/data-container.js','text/javascript')
             
         else: # If the response isn't recognized, send a 404 file not found error
             self.send_response(404)
@@ -118,7 +127,6 @@ class Request_handler(BaseHTTPRequestHandler):
             # Once the post request has been processed, use a 303 redirect to send the browser back to '/'
             # wikipedia.org/wiki/Post/Redirect/Get
             self.send_response(303)
-            # self.send_header('Content-type', 'text/html') # I don't think I need this for a 303 redirect
             self.send_header('Location', '/')
             self.end_headers()
         else:
