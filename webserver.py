@@ -10,6 +10,9 @@ import logging
 import random
 import html
 
+import time
+from threading import Thread
+
 # Import the DataStore.py functions
 from DataStore import DataStore
 
@@ -139,7 +142,12 @@ class Request_handler(BaseHTTPRequestHandler):
             self.send_response(404)
             self.end_headers()
         
-        
+def say_hi():
+    while True:
+        logging.info("hi")
+        time.sleep(1)
+
+
 ##############
 ###  MAIN  ###
 ##############
@@ -147,6 +155,9 @@ if __name__ == '__main__':
     # Turn on logging so that info appears in the console window
     logging.basicConfig(level=logging_level)
     
+    task1 = Thread(target=say_hi)
+    task1.start()
+
     # Start the webserver listening at our home address and port
     # Request_handler will be responsible for all requests
     server_address = ('', port)
