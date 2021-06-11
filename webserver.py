@@ -143,8 +143,6 @@ class Request_handler(BaseHTTPRequestHandler):
 ##############
 ###  MAIN  ###
 ##############
-# This is the 'main' part of the program. It is the first thing run when the program is started
-
 if __name__ == '__main__':
     # Turn on logging so that info appears in the console window
     logging.basicConfig(level=logging_level)
