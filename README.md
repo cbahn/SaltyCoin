@@ -6,24 +6,29 @@
 
 ## Deployment
 
-1. Spin up fresh ubuntu server
-
-2.
-```sudo apt install software-properties-common
+```bash
+# install python3.9 from ppa
+sudo apt install software-properties-common
 sudo add-apt-repository ppa:deadsnakes/ppa
 sudo apt update
 sudo apt install python3.9
 
+# install pip then install numpy library
 sudo apt install python3-pip
 pip install numpy
 
+# get code
 cd /srv
 git clone https://github.com/cbahn/SaltyCoin.git
+
+# run server
+cd /srv/SaltyCoin
+python3 webserver.py
 ```
 
 ## Next Steps
-[ ] Clean up templating engine
-[ ] Complete Admin menu
-[ ] Make it easier to adjust the time between value changes
-[ ] Add clientside buy-sell game mechanics
-[ ] Lightly obfuscate client-side gamestate tracking
+- [ ] Clean up templating engine
+- [ ] Complete Admin menu
+- [ ] Make it easier to adjust the time between value changes
+- [ ] Add clientside buy-sell game mechanics
+- [ ] Lightly obfuscate client-side gamestate tracking
