@@ -51,7 +51,7 @@ market = RandomWalker()
 def homepage_builder():
     filein = open( 'index.html' )
     templ = Template( filein.read() )
-    result = templ.substitute( {'motd': message_of_the_day, 'table':NameBook().generate_table()} )
+    result = templ.substitute( {} )
     return result
 
 class NameBook:
@@ -101,6 +101,11 @@ class Request_handler(BaseHTTPRequestHandler):
             self.send_header('Content-type', 'text/html')
             self.end_headers()
             self.wfile.write(homepage_builder().encode('utf-8'))
+            return
+
+        elif pathComponents[0] == 'admin' and len(pathComponents) == 1:
+            self.__send_file('admin.html', 'text/html')
+            return
 
         elif pathComponents[0] == 'res':
 

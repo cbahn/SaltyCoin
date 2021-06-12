@@ -1,0 +1,31 @@
+<html>
+<head>
+<meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+<meta content="utf-8" http-equiv="encoding">
+  
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js" ></script>
+<link rel="shortcut icon" href="/res/favicon.ico" />
+<link rel="stylesheet" href="/res/style.css">
+</head>
+<body>
+<h1>Admin Settings</h1>
+
+<form action="/admin" method="post"></form>
+<table>
+  <tr>
+    <th>Setting</th>
+    <th>Current Value</th>
+    <th>Info</th>
+  </tr>
+  <tr>
+      <td>Volitility</td>
+      <td><input type="number" name="volitility" value="100"></td>
+      <td>How much the price will randomly change minute-to-minute. 0 means the line is perfectly smooth, ~100 is normal, and ~1000 is highly volitile</td>
+  </tr>
+</table>
+<br>
+
+<input type="submit" value="Submit Changes">
+</form>
+
+</body>
