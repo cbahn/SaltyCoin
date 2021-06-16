@@ -9,7 +9,6 @@ from urllib.parse import parse_qs
 import logging
 import random
 import html
-import re
 
 import time
 import datetime
@@ -36,12 +35,11 @@ logging_level = logging.INFO
 # Location of the guestlist storage file
 guestlist_file_location = 'datafiles/guestlist.json'
 
-message_of_the_day = "This message of the day is brought to you by templating."
-
 #########################
 ###  INITIALIZATIONS  ###
 #########################
 
+# Can this be moved into main somehow? I feel like setting a global variable like this is a bad idea
 market = RandomWalker()
 
 #####################
@@ -76,7 +74,7 @@ class NameBook:
 
 class Request_handler(BaseHTTPRequestHandler):
     
-    def __send_file(self,file_location,content_type):
+    def __serve_file(self,file_location,content_type):
             with open(file_location, 'rb') as file:            # Using 'with' ensures that the file is closed once we're done
                 self.send_response(200)                        # Response type: Success 👍
                 self.send_header('Content-type', content_type) # Set an appropriate Content-type
@@ -104,7 +102,7 @@ class Request_handler(BaseHTTPRequestHandler):
             return
 
         elif pathComponents[0] == 'admin' and len(pathComponents) == 1:
-            self.__send_file('admin.html', 'text/html')
+            self.__serve_file('admin.html', 'text/html')
             return
 
         elif pathComponents[0] == 'res':
@@ -122,7 +120,7 @@ class Request_handler(BaseHTTPRequestHandler):
 
             if len(pathComponents) == 2 and pathComponents[1] in allowedFiles:
                 # serve the file. Use the allowedFiles dictionary to send correct MIME type
-                self.__send_file('res/' + pathComponents[1], allowedFiles[pathComponents[1]])
+                self.__serve_file('res/' + pathComponents[1], allowedFiles[pathComponents[1]])
                 return
             else:
                 # file not found in /res directory
@@ -144,8 +142,12 @@ class Request_handler(BaseHTTPRequestHandler):
 
 
     def do_POST(self):
-        """ If a POST request is received, then we have new data we want to add to the list.
-        More info on GET vs POST https://www.w3schools.com/tags/ref_httpmethods.asp """
+
+        # This is a placeholder for now
+        if self.path == '/API':
+            self.send_response(501) # NOT IMPLEMENTED
+            self.end_headers()
+            return
         
         # The only valid path is /guestlist. Reject everything else with a 404 error
         if self.path == '/guestlist':
@@ -167,6 +169,7 @@ class Request_handler(BaseHTTPRequestHandler):
             self.send_response(303)
             self.send_header('Location', '/')
             self.end_headers()
+            return
         else:
             self.send_response(404)
             self.end_headers()
