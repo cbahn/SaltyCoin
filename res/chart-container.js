@@ -1,3 +1,5 @@
+/* Settings for the stock chart */
+
 const gridColor = "#33ccff";
 const tickColor = "#66ff99";
 const tickFontSize = 18;

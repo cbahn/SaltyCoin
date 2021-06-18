@@ -1,38 +1,30 @@
-const context = document.getElementById("chart").getContext("2d");
-const upElement = document.getElementById("up");
-const downElement = document.getElementById("down");
-const currentValueElement = document.getElementById("currentValue");
+
+numberOfValues = 100;
+
+
+const context = $("#chart")[0].getContext("2d");
+const currentValueElement = $("#currentValue");
 const chartContainer = new ChartContainer(context);
-const dataContainer = new DataContainer();
+const dataContainer = new DataContainer(numberOfValues);
 
 function tick() {  
   $.ajax({
     url:'100_values',
     dataType: 'json',
     success: function(ajaxResponse) {
+
       // Begin async
-
-
       const data = dataContainer.replace(ajaxResponse);
-      chartContainer.setData(dataContainer.replace(ajaxResponse));
-      const currentValue = data[data.length-1].y.toFixed(2);
-      const previousValue = data[data.length-2].y.toFixed(2);
-      currentValueElement.textContent = currentValue;
-      if (currentValue > previousValue) {
-          upElement.style.display = null;
-          downElement.style.display = "none";
-      }
-      else {
-          upElement.style.display = "none";
-          downElement.style.display = null;
-      }
-
+      chartContainer.setData( dataContainer.getDataForChart() );
+      const currentValue = dataContainer.getLatestValue().toFixed(2);
+      currentValueElement.text(currentValue);
       // End async
+
     }
   });
 }
 
-tickInterval = 1000;
+tickInterval = 1000; //1 second
 
 tick();
 window.setInterval(() => tick(), tickInterval);
