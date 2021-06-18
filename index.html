@@ -12,8 +12,23 @@
 <h1>SaltyCoin - $$<span id=currentValue></span></h1>
 <canvas id=chart></canvas>
 
+<table>
+    <tr>
+      <th>Your USD</th>
+      <th>$$<span id=yourUSD>000</span></th>
+    </tr>
+    <tr>
+      <td>Your NACL</td>
+      <td><span id=yourNACL>000</span></td>
+    </tr>
+  </table> 
+
+  <button type="button" onclick="sellAll()">SELL</button>
+  <button type="button" onclick="buyAll()">BUY</button>
+
 </body>
 
+<script src="res/game-container.js"></script>
 <script src="res/chart-container.js"></script>
 <script src="res/data-container.js"></script>
 <script src="res/chart.min.js"></script>

@@ -112,6 +112,7 @@ class Request_handler(BaseHTTPRequestHandler):
             allowedFiles = {
                 'style.css': 'text/css',
                 'favicon.ico': 'image/x-icon',
+                'game-container.js': 'text/javascript',
                 'chart-container.js': 'text/javascript',
                 'chart.min.js': 'text/javascript',
                 'data-container.js': 'text/javascript',
