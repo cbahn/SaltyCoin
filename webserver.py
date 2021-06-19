@@ -9,6 +9,7 @@ from urllib.parse import parse_qs
 import logging
 import random
 import html
+import json
 
 import time
 import datetime
@@ -87,6 +88,11 @@ class Request_handler(BaseHTTPRequestHandler):
         http://localhost:8080/images then the path will be '/images'.
         """
 
+        logging.info(type(self.headers)) #.pop('Connection', None)
+        logging.info("GET request,\nPath: %s\nHeaders:\n%s\n", str(self.path), str(self.headers))
+        # self._set_response()
+        # self.wfile.write("GET request for {}".format(self.path).encode('utf-8'))
+
         # Split path into components. The path is split by the '/' deliminator and all empty strings are discarded
         # '/' becomes []
         # '/foo' becomes ['foo']
@@ -141,13 +147,59 @@ class Request_handler(BaseHTTPRequestHandler):
         self.end_headers()
         return
 
+    """
+    accepts a request and attepmts to parse data as a json file
+    Requires that Content-Type is application/json
+    returns json data if parse is successful, otherwise raises ValueError
+    """
+    def __parse_json_POST_data(self):
+        if not self.headers['Content-Type'] == 'application/json':
+            raise ValueError("Content-Type is not 'application/json'")
+
+        content_length = int(self.headers['Content-Length'])
+        post_data = self.rfile.read(content_length)
+        return json.loads(post_data)
+        #logging.info("POST request,\nPath: %s\nHeaders:\n%s\n\nBody:\n%s\n", str(self.path), str(self.headers), post_data.decode('utf-8'))    
 
     def do_POST(self):
 
-        # This is a placeholder for now
         if self.path == '/API':
-            self.send_response(501) # NOT IMPLEMENTED
+
+            try:
+                json_data = self.__parse_json_POST_data()
+            except (ValueError, json.decoder.JSONDecodeError) as e:
+                self.send_response(400) #json parsing issues, throw away request
+                self.end_headers()
+                logging.info("JSON data error: " + str(e))
+                self.wfile.write( str(e).encode('utf-8') )
+                return
+
+            if 'key' not in json_data or not json_data['key'] == "change_me": # TODO change this test value
+                self.send_response(403)
+                self.end_headers()
+                self.wfile.write( "Error: invalid API key".encode('utf-8') )
+                return
+            
+            if not 'price_change_percent' in json_data:
+                self.send_response(403)
+                self.end_headers()
+                self.wfile.write( "Error: 'price_change_percent value missing'".encode('utf-8') )
+                return
+
+            try:
+                price_change_percent = float(json_data['price_change_percent'])
+            except ValueError:
+                self.send_response(403)
+                self.end_headers()
+                self.wfile.write( "Error: 'price_change_percent' is not a number".encode('utf-8') )
+                return
+
+            ## PRICE CHANGE DONE HERE !!!
+            market.changePrice(price_change_percent)
+
+            self.send_response(200)
             self.end_headers()
+            self.wfile.write( "Success: price change accepted".encode('utf-8') )
             return
         
         # The only valid path is /guestlist. Reject everything else with a 404 error
@@ -171,9 +223,11 @@ class Request_handler(BaseHTTPRequestHandler):
             self.send_header('Location', '/')
             self.end_headers()
             return
-        else:
-            self.send_response(404)
-            self.end_headers()
+
+
+        # All other repsonses need to end with a 'return' or else this will be hit
+        self.send_response(404)
+        self.end_headers()
         
 def sixtySecLoop(market):
     while True:
