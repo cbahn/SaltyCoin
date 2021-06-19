@@ -27,8 +27,11 @@ python3 webserver.py
 ```
 
 ## Next Steps
-- [ ] Clean up templating engine
-- [ ] Complete Admin menu
+- [X] Clean up templating engine
+- [ ] Complete Admin menu. It should use the API for requests
 - [ ] Make it easier to adjust the time between value changes
-- [ ] Add clientside buy-sell game mechanics
+- [X] Add clientside buy-sell game mechanics
 - [ ] Lightly obfuscate client-side gamestate tracking
+- [ ] Solve "Connection: keep-alive" hanging issue
+- [ ] Improve the way that the API drives the market's numbers
+- [ ] Rework the web layout
